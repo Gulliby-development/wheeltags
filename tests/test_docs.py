@@ -12,7 +12,7 @@ import pytest
         "## Exit codes",
         "## Development",
         (
-            "usage: wheeltags tags TARGET [--limit N]\n"
+            "usage: wheeltags tags TARGET [--limit N] [--abi NAME]\n"
             "       wheeltags explain FILE TARGET\n"
             "       wheeltags pick LISTING TARGET... [--all]\n"
             "       wheeltags dead LISTING TARGET...\n"
