@@ -67,7 +67,7 @@ def test_help_is_emitted_once_without_reads():
     io = FakeIo()
     assert run(["--help"], io) == 0
     assert HELP == (
-        "usage: wheeltags tags TARGET [--limit N]\n"
+        "usage: wheeltags tags TARGET [--limit N] [--abi NAME]\n"
         "       wheeltags explain FILE TARGET\n"
         "       wheeltags pick LISTING TARGET... [--all]\n"
         "       wheeltags dead LISTING TARGET...\n"

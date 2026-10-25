@@ -1,12 +1,12 @@
 from wheeltags.failure import Failure
 from wheeltags.options import Parsed, Spec
 from wheeltags.streams import Io
-from wheeltags.tags_view import render_tags
+from wheeltags.tags_view import matching, render_tags
 from wheeltags.target import parse_target, target_tags
 from wheeltags.text import show
 
-USAGE = "wheeltags tags TARGET [--limit N]"
-SPECS: list[Spec] = [Spec("--limit", True)]
+USAGE = "wheeltags tags TARGET [--limit N] [--abi NAME]"
+SPECS: list[Spec] = [Spec("--limit", True), Spec("--abi", True)]
 
 
 def run_tags(args: list[str], parsed: Parsed, io: Io) -> tuple[str, int]:
@@ -28,4 +28,15 @@ def run_tags(args: list[str], parsed: Parsed, io: Io) -> tuple[str, int]:
             raise Failure(f"invalid limit {show(limit_text)}")
         limit = int(limit_text)
 
-    return render_tags(target_tags(target), limit), 0
+    abi = parsed.values.get("--abi")
+    if abi is not None and not (
+        1 <= len(abi) <= 20
+        and all(
+            character.isascii() and (character.isalnum() or character == "_") for character in abi
+        )
+    ):
+        raise Failure(f"invalid abi {show(abi)}")
+
+    tags = target_tags(target)
+    status = 1 if abi is not None and not matching(tags, abi) else 0
+    return render_tags(tags, limit, abi), status

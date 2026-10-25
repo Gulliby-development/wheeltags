@@ -78,8 +78,8 @@ _FULL_CP34_OUTPUT = (
 
 
 def test_public_contract_and_returned_output() -> None:
-    assert USAGE == "wheeltags tags TARGET [--limit N]"
-    assert SPECS == [Spec("--limit", True)]
+    assert USAGE == "wheeltags tags TARGET [--limit N] [--abi NAME]"
+    assert SPECS == [Spec("--limit", True), Spec("--abi", True)]
 
     parsed = Parsed(frozenset(), {}, ["cp34:win32"])
     output, code = run_tags(parsed.args, parsed, FakeIo())
