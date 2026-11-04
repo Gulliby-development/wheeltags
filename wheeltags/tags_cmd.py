@@ -5,8 +5,8 @@ from wheeltags.tags_view import matching, render_tags
 from wheeltags.target import parse_target, target_tags
 from wheeltags.text import show
 
-USAGE = "wheeltags tags TARGET [--limit N] [--abi NAME]"
-SPECS: list[Spec] = [Spec("--limit", True), Spec("--abi", True)]
+USAGE = "wheeltags tags TARGET [--limit N] [--abi NAME] [--platform NAME]"
+SPECS: list[Spec] = [Spec("--limit", True), Spec("--abi", True), Spec("--platform", True)]
 
 
 def run_tags(args: list[str], parsed: Parsed, io: Io) -> tuple[str, int]:
@@ -37,6 +37,17 @@ def run_tags(args: list[str], parsed: Parsed, io: Io) -> tuple[str, int]:
     ):
         raise Failure(f"invalid abi {show(abi)}")
 
+    platform = parsed.values.get("--platform")
+    if platform is not None and not (
+        1 <= len(platform) <= 40
+        and all(
+            character.isascii() and (character.isalnum() or character == "_")
+            for character in platform
+        )
+    ):
+        raise Failure(f"invalid platform {show(platform)}")
+
     tags = target_tags(target)
-    status = 1 if abi is not None and not matching(tags, abi) else 0
-    return render_tags(tags, limit, abi), status
+    filtered = abi is not None or platform is not None
+    status = 1 if filtered and not matching(tags, abi, platform) else 0
+    return render_tags(tags, limit, abi, platform), status

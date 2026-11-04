@@ -21,7 +21,7 @@ Use a Python 3.11 or newer interpreter from the repository root. The examples be
 The help text lists the five command forms:
 
 ```text
-usage: wheeltags tags TARGET [--limit N] [--abi NAME]
+usage: wheeltags tags TARGET [--limit N] [--abi NAME] [--platform NAME]
        wheeltags explain FILE TARGET
        wheeltags pick LISTING TARGET... [--all]
        wheeltags dead LISTING TARGET...
@@ -73,6 +73,21 @@ RANK  TAG
 3     cp33-abi3-win32
 tags        3
 shown       2
+```
+
+`--platform NAME` does the same for the platform part. Here the platform `any` keeps the tags that run on every platform:
+
+```console
+python -m wheeltags tags cp34:win32 --platform any --limit 3
+```
+
+```text
+RANK  TAG
+11    cp34-none-any
+12    py34-none-any
+13    py3-none-any
+tags        7
+shown       3
 ```
 
 Use `explain` to inspect one wheel filename against one target. Its report includes the wheel's name, version, build, number of tags and verdict, followed by the best matching tag and rank or an incompatibility reason. It checks the `FILE` argument as text and does not open it. Here is a compatible-wheel example:
@@ -174,14 +189,14 @@ tags        4
 These are the exact command forms shown by `wheeltags --help`:
 
 ```text
-usage: wheeltags tags TARGET [--limit N] [--abi NAME]
+usage: wheeltags tags TARGET [--limit N] [--abi NAME] [--platform NAME]
        wheeltags explain FILE TARGET
        wheeltags pick LISTING TARGET... [--all]
        wheeltags dead LISTING TARGET...
        wheeltags expand TAGSET
 ```
 
-- `tags TARGET [--limit N] [--abi NAME]` lists accepted tags, best first; `N` must be a decimal limit from 1 to 9999 without a leading zero. `NAME` is 1 to 20 ASCII letters, digits or underscores and keeps only the tags whose ABI part equals it.
+- `tags TARGET [--limit N] [--abi NAME] [--platform NAME]` lists accepted tags, best first; `N` must be a decimal limit from 1 to 9999 without a leading zero. `NAME` is 1 to 20 ASCII letters, digits or underscores and keeps only the tags whose ABI part equals it. `--platform NAME` is 1 to 40 ASCII letters, digits or underscores and keeps only the tags whose platform part (the last of the three parts) equals it; with `--abi` a tag must match both.
 - `explain FILE TARGET` checks the wheel name text and explains compatibility.
 - `pick LISTING TARGET... [--all]` chooses release files for one or more targets. A target with no candidate is shown as uncovered.
 - `dead LISTING TARGET...` finds wheels that are not the first candidate for any requested target.
@@ -190,7 +205,7 @@ usage: wheeltags tags TARGET [--limit N] [--abi NAME]
 ## Exit codes
 
 - `0`: the command completed successfully; for `explain` the wheel is compatible, for `pick` every target is covered, and for `dead` there are no unused wheels.
-- `1`: a negative result: `tags --abi` matched no tag, `explain` found an incompatible wheel, `pick` could not cover every target, or `dead` found at least one unused wheel.
+- `1`: a negative result: `tags --abi` or `tags --platform` matched no tag, `explain` found an incompatible wheel, `pick` could not cover every target, or `dead` found at least one unused wheel.
 - `2`: an input, option or file error. The command writes no standard output and reports one diagnostic line to standard error.
 
 ## Development
